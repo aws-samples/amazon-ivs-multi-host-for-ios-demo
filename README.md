@@ -32,6 +32,7 @@ You must have the `ApiUrl` from the [Amazon IVS Multi-host Serverless Demo](http
 ## More Documentation
 
 - [Amazon IVS iOS Broadcast SDK Guide](https://docs.aws.amazon.com/ivs/latest/userguide/broadcast-ios.html)
+- [Amazon IVS iOS Broadcast SDK Sample code](https://github.com/aws-samples/amazon-ivs-broadcast-ios-sample)
 - [More code samples and demos](https://www.ivs.rocks/examples)
 
 ## License

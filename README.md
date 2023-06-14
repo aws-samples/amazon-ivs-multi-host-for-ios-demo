@@ -27,7 +27,7 @@ You must have the `ApiUrl` from the [Amazon IVS Multi-host Serverless Demo](http
 ## Known Issues
 
 - This app has only been tested on devices running iOS 14 or later. While this app may work on devices running older versions of iOS, it has not been tested on them.
-- A list of known issues for the Amazon IVS Broadcast SDK is available on the following page: [Amazon IVS Broadcast SDK: iOS Guide](https://docs.aws.amazon.com/ivs/latest/userguide/broadcast-ios.html#broadcast-ios-issues-multiple-hosts)
+- A list of known issues for the Amazon IVS Broadcast SDK is available on the following page: [Amazon IVS Broadcast SDK: iOS Known Issues](https://docs.aws.amazon.com/ivs/latest/userguide/broadcast-ios-issues.html)
 
 ## More Documentation
 

@@ -37,11 +37,7 @@ struct NotificationsView: View {
                     .background(colorFor(notification.type))
                     .cornerRadius(8)
                     .onTapGesture {
-                        if let index = viewModel.notifications.firstIndex(of: notification) {
-                            DispatchQueue.main.async {
-                                viewModel.notifications.remove(at: index)
-                            }
-                        }
+                        viewModel.removeNotification(notification)
                     }
                 })
                 .background(

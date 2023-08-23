@@ -10,9 +10,7 @@ import AmazonIVSBroadcast
 extension StageViewModel: ServerDelegate {
     func didEmitError(error: String) {
         print("ℹ ❌ \(error)")
-        DispatchQueue.main.async {
-            self.notifications.append(Notification(type: .error, message: error))
-        }
+        appendErrorNotification(error)
     }
 }
 
@@ -26,9 +24,7 @@ extension StageViewModel: IVSMicrophoneDelegate {
 extension StageViewModel: IVSErrorDelegate {
     func source(_ source: IVSErrorSource, didEmitError error: Error) {
         print("ℹ ❌ IVSError \(error)")
-        DispatchQueue.main.async {
-            self.notifications.append(Notification(type: .error, message: error.localizedDescription))
-        }
+        appendErrorNotification(error.localizedDescription)
     }
 }
 

@@ -15,7 +15,7 @@ class StageViewModel: NSObject, ObservableObject {
     @Published var primaryCameraName = "None"
     @Published var primaryMicrophoneName = "None"
     @Published var allStages: [StageDetails] = []
-    @Published var notifications: [Notification] = [] {
+    @Published private(set) var notifications: [Notification] = [] {
         didSet {
             // Hide success notifications after 5 seconds
             if let newNotification = notifications.last, newNotification.type == .success {
@@ -194,16 +194,12 @@ class StageViewModel: NSObject, ObservableObject {
         // notification to stream again.
         destroyBroadcastSession()
         print("ℹ ❌ media services were lost")
-        DispatchQueue.main.async {
-            self.notifications.append(Notification(type: .error, message: "The Media Services on this device have been lost, no video or audio work can be done for a couple seconds. Please wait…"))
-        }
+        appendErrorNotification("The Media Services on this device have been lost, no video or audio work can be done for a couple seconds. Please wait…")
     }
 
     @objc private func mediaServicesReset() {
         print("ℹ media services were reset")
-        DispatchQueue.main.async {
-            self.notifications.append(Notification(type: .success, message: "Media services restored - OK to start broadcast again"))
-        }
+        appendSuccessNotification("Media services restored - OK to start broadcast again")
     }
 
     func initializeStage(onComplete: @escaping () -> Void) {
@@ -230,9 +226,7 @@ class StageViewModel: NSObject, ObservableObject {
                 onComplete(true)
             } else {
                 print("ℹ ❌ Could not create stage: \(error ?? "")")
-                DispatchQueue.main.async {
-                    self?.notifications.append(Notification(type: .error, message: error ?? ""))
-                }
+                self?.appendErrorNotification(error ?? "")
                 onComplete(false)
             }
         }
@@ -249,9 +243,7 @@ class StageViewModel: NSObject, ObservableObject {
         services.server.joinStage(user: services.user, groupId: stage.groupId) { [weak self] stageJoinResponse, error in
             let token = stageJoinResponse?.stage
             if token == nil {
-                DispatchQueue.main.async {
-                    self?.notifications.append(Notification(type: .error, message: "Can't join stage - missing stage token"))
-                }
+                self?.appendErrorNotification("Can't join stage - missing stage token")
             }
             self?.services.user.participantId = stageJoinResponse?.stage.token.participantId
             onComplete(stageJoinResponse, nil)
@@ -270,9 +262,7 @@ class StageViewModel: NSObject, ObservableObject {
         print("ℹ Joining stage as host...")
         guard let hostToken = services.server.stageHostDetails?.stage.token else {
             print("❌ Can't join - no auth token in host stage details")
-            DispatchQueue.main.async {
-                self.notifications.append(Notification(type: .error, message: "Can't join created stage - missing host stage details"))
-            }
+            self.appendErrorNotification("Can't join created stage - missing host stage details")
             onComplete(false)
             return
         }
@@ -295,11 +285,7 @@ class StageViewModel: NSObject, ObservableObject {
             stage.errorDelegate = self
             try stage.join()
             self.stage = stage
-            DispatchQueue.main.async {
-                self.notifications.append(
-                    Notification(type: .success,
-                                 message: self.services.user.isHost ? "Stage Created" : "Stage Joined"))
-            }
+            appendSuccessNotification(self.services.user.isHost ? "Stage Created" : "Stage Joined")
             print("ℹ stage joined")
             currentJoinToken = token
             DispatchQueue.main.async {
@@ -403,9 +389,7 @@ class StageViewModel: NSObject, ObservableObject {
             do {
                 guard let stageChannel = services.server.stageHostDetails?.channel else {
                     print("ℹ ❌ Can't start broadcasting - hostStageDetails not set")
-                    DispatchQueue.main.async {
-                        self.notifications.append(Notification(type: .warning, message: "Can't start - missing host stage details"))
-                    }
+                    appendWarningNotification("Can't start - missing host stage details")
                     return
                 }
                 print("ℹ Starting broadcast")
@@ -414,9 +398,7 @@ class StageViewModel: NSObject, ObservableObject {
                 isBroadcasting = true
             } catch {
                 print("ℹ ❌ error starting broadcast: \(error)")
-                DispatchQueue.main.async {
-                    self.notifications.append(Notification(type: .error, message: error.localizedDescription))
-                }
+                appendErrorNotification(error.localizedDescription)
                 isBroadcasting = false
                 broadcastSession = nil
             }
@@ -426,6 +408,35 @@ class StageViewModel: NSObject, ObservableObject {
     func swapCamera() {
         print("ℹ swapping camera to \(selectedCamera?.position == .front ? "back" : "front")")
         setLocalCamera(to: selectedCamera?.position == .front ? .back : .front)
+    }
+
+    func appendSuccessNotification(_ message: String) {
+        DispatchQueue.main.async {
+            self.notifications.removeAll(where: { $0.type == .success })
+            self.notifications.append(Notification(type: .success, message: message))
+        }
+    }
+
+    func appendWarningNotification(_ message: String) {
+        DispatchQueue.main.async {
+            self.notifications.removeAll(where: { $0.type == .warning })
+            self.notifications.append(Notification(type: .warning, message: message))
+        }
+    }
+
+    func appendErrorNotification(_ message: String) {
+        DispatchQueue.main.async {
+            self.notifications.removeAll(where: { $0.type == .error })
+            self.notifications.append(Notification(type: .error, message: message))
+        }
+    }
+
+    func removeNotification(_ notification: Notification) {
+        if let index = notifications.firstIndex(of: notification) {
+            DispatchQueue.main.async {
+                self.notifications.remove(at: index)
+            }
+        }
     }
 
     private func setLocalCamera(to position: IVSDevicePosition) {
@@ -441,9 +452,7 @@ class StageViewModel: NSObject, ObservableObject {
                 camera.setPreferredInputSource(cameraSource) { [weak self] in
                     if let error = $0 {
                         print("ℹ ❌ Error on setting preferred input source: \(error)")
-                        DispatchQueue.main.async {
-                            self?.notifications.append(Notification(type: .error, message: error.localizedDescription))
-                        }
+                        self?.appendErrorNotification(error.localizedDescription)
                     } else {
                         self?.selectedCamera = cameraSource
                     }
@@ -484,9 +493,7 @@ class StageViewModel: NSObject, ObservableObject {
             updateBroadcastBindings()
         } catch {
             print("ℹ ❌ error updating broadcast slots: \(error)")
-            DispatchQueue.main.async {
-                self.notifications.append(Notification(type: .error, message: error.localizedDescription))
-            }
+            appendErrorNotification(error.localizedDescription)
         }
     }
 
@@ -546,9 +553,7 @@ class StageViewModel: NSObject, ObservableObject {
             return true
         } catch {
             print("ℹ ❌ error setting up BroadcastSession: \(error)")
-            DispatchQueue.main.async {
-                self.notifications.append(Notification(type: .error, message: error.localizedDescription))
-            }
+            appendErrorNotification(error.localizedDescription)
             return false
         }
     }
@@ -597,9 +602,7 @@ class StageViewModel: NSObject, ObservableObject {
             localDevice.setPreferredInputSource(inputSource) { [weak self] in
                 if let error = $0 {
                     print("ℹ ❌ error setting device: \(error)")
-                    DispatchQueue.main.async {
-                        self?.notifications.append(Notification(type: .error, message: error.localizedDescription))
-                    }
+                    self?.appendErrorNotification(error.localizedDescription)
                 } else {
                     self?[keyPath: outDevice] = inputSource
                 }

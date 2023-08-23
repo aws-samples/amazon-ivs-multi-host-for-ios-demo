@@ -94,9 +94,7 @@ struct SetupView: View {
 
             checkAVPermissions { granted in
                 if !granted {
-                    DispatchQueue.main.async {
-                        services.viewModel?.notifications.append(Notification(type: .error, message: "No camera/microphone permission granted"))
-                    }
+                    services.viewModel?.appendErrorNotification("No camera/microphone permission granted")
                 }
             }
         }

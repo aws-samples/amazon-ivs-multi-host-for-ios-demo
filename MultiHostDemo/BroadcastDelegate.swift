@@ -29,7 +29,7 @@ class BroadcastDelegate: UIViewController, IVSBroadcastSession.Delegate {
     func broadcastSession(_ session: IVSBroadcastSession, didEmitError error: Error) {
         print("ℹ ❌ IVSBroadcastSession did emit error \(error)")
         DispatchQueue.main.async { [weak self] in
-            self?.viewModel?.notifications.append(Notification(type: .error, message: error.localizedDescription))
+            self?.viewModel?.appendErrorNotification(error.localizedDescription)
         }
     }
 }

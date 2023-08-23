@@ -42,11 +42,7 @@ class ServicesManager: ObservableObject {
         let tokenRequest = ChatTokenRequest(user: user, chatRoomId: chat.id, chatRoomToken: chat.token)
         chatModel.connectChatRoom(tokenRequest) { error in
             if let error = error {
-                DispatchQueue.main.async {
-                    self.viewModel?.notifications.append(
-                        Notification(type: .error, message: error)
-                    )
-                }
+                self.viewModel?.appendErrorNotification(error)
             }
         }
     }

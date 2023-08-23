@@ -32,10 +32,7 @@ struct ChatView: View {
                             }
                             chatModel.sendMessage(message, user: services.user, onComplete: { error in
                                 if let error = error {
-                                    DispatchQueue.main.async {
-                                        services.viewModel?.notifications.append(
-                                            Notification(type: .error, message: error))
-                                    }
+                                    services.viewModel?.appendErrorNotification(error)
                                 } else {
                                     message = ""
                                 }

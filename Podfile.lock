@@ -1,11 +1,11 @@
 PODS:
-  - AmazonIVSBroadcast/Stages (1.12.0)
+  - AmazonIVSBroadcast/Stages (1.13.0)
   - AmazonIVSChat (1.0.0):
     - AmazonIVSChat/Messaging (= 1.0.0)
   - AmazonIVSChat/Messaging (1.0.0)
 
 DEPENDENCIES:
-  - AmazonIVSBroadcast/Stages (~> 1.12.0)
+  - AmazonIVSBroadcast/Stages (~> 1.13.0)
   - AmazonIVSChat (~> 1.0.0)
 
 SPEC REPOS:
@@ -14,9 +14,9 @@ SPEC REPOS:
     - AmazonIVSChat
 
 SPEC CHECKSUMS:
-  AmazonIVSBroadcast: ce4f06bc39c6784c2821ea24ec521712a4a39554
+  AmazonIVSBroadcast: 383a63e08c13c26a0268a01f23b8288030be53b9
   AmazonIVSChat: 62d4e654c4b16b7e62d43048a0e548efd145f183
 
-PODFILE CHECKSUM: f93b5c7c18ba46b838a7704363b5d820935ab458
+PODFILE CHECKSUM: 5378e35b6d7613017b4ac7de87209dafe6f1aab9
 
-COCOAPODS: 1.12.0
+COCOAPODS: 1.13.0
